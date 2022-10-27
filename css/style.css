@@ -1,0 +1,13 @@
+button img{       
+    width: 35px;
+    height: 35px;
+}
+
+#svg{
+    position: absolute;
+    border: 2px solid black;
+}
+#temp{
+    position: absolute;
+    z-index: 1;
+}
