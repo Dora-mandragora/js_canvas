@@ -2,6 +2,7 @@
 let isRect = false;
 let isCircle = false;
 let isLine = false;
+let isPen = false;
 
 
 window.onload = () =>{
@@ -15,36 +16,50 @@ window.onload = () =>{
     const rectButton = document.getElementById('rect');
     const circleButton = document.getElementById('circle'); 
     const lineButton = document.getElementById('line');
+    const penButton = document.getElementById('pen');
     const clearButton = document.getElementById('clear');
 
     canvas.addEventListener('mousedown', createRectEvents);
+    canvas.addEventListener('mousedown', createCircleEvents);
+    canvas.addEventListener('mousedown', createLineEvents);
 
     //----------BUTTONS-------------------------------------
     rectButton.addEventListener('click', ()=>{
         isRect = true;
         isCircle = false;
         isLine = false;
+        isPen = false;
     });
     circleButton.addEventListener('click', ()=>{
         isRect = false;
         isCircle = true;
         isLine = false;
+        isPen = false;
     });
     lineButton.addEventListener('click', ()=>{
         isRect = false;
         isCircle = false;
         isLine = true;
+        isPen = false;
+    });
+    penButton.addEventListener('click', ()=>{
+        isRect = false;
+        isCircle = false;
+        isLine = false;
+        isPen = true;
     });
     //----------BUTTONS-------------------------------------
 
 
     function createRectEvents(e)
     {
+        if(!isRect) return;
+
         let shiftX = e.offsetX;
         let shiftY = e.offsetY;
         let origLoc = {X: e.offsetX, Y: e.offsetY};
-
-        if(!isRect) return;
+        let borderColor = document.getElementById('border').value;
+        let fillColor = document.getElementById('fill').value;
 
         isMouseDown = true;
         canvas.addEventListener('mousemove', onMouseMoveRect);
@@ -54,8 +69,10 @@ window.onload = () =>{
         canvas.appendChild(tempCanvas);
         tempCanvas.id = 'temp';
         tempCtx = tempCanvas.getContext('2d');
-        tempCtx.fillStyle = 'rgb(0,0,0)';
-        tempCtx.strokeRect(shiftX,shiftY,1,1);
+        tempCtx.fillStyle = fillColor;
+        tempCtx.strokeStyle = borderColor;
+        tempCtx.lineWidth = 5;
+        tempCtx.fillRect(shiftX,shiftY,1,1);
 
         
         function onMouseMoveRect(event){
@@ -79,10 +96,110 @@ window.onload = () =>{
             }    
             else dX = shiftX;        
             tempCtx.strokeRect(dX,dY,width,height);
+            tempCtx.fillRect(dX,dY,width,height);
 
         }
 
         function onMouseUpRect(){
+            isMouseDown = false;
+            ctx.drawImage(tempCanvas, -2.4, -2.4);
+            if(document.getElementById('temp') != null)
+                document.getElementById('temp').remove();
+        }
+    }
+
+    function createCircleEvents(e){
+        if(!isCircle) return;
+
+        let shiftX = e.offsetX;
+        let shiftY = e.offsetY;
+        let borderColor = document.getElementById('border').value;
+        let fillColor = document.getElementById('fill').value;
+
+        isMouseDown = true;
+        canvas.addEventListener('mousemove', onMouseMoveCircle);
+        canvas.addEventListener('mouseup',onMouseUpCircle);
+
+        let tempCanvas = bitmapCanvas.cloneNode();
+        canvas.appendChild(tempCanvas);
+        tempCanvas.id = 'temp';
+        tempCtx = tempCanvas.getContext('2d');
+        tempCtx.fillStyle = fillColor;
+        tempCtx.strokeStyle = borderColor;
+        tempCtx.lineWidth = 4;
+        //рисовать круг
+        //.beginPath();
+        tempCtx.arc(shiftX,shiftY, 1, 0, Math.PI*2);
+        tempCtx.stroke();
+
+
+        function onMouseMoveCircle(e){
+            if(!isMouseDown) return;
+            moveAtCircle(e.offsetX, e.offsetY);
+        }
+        function moveAtCircle(dX, dY){
+            tempCtx.clearRect(0,0,window.outerWidth-100,window.outerHeight-100);
+            let radius = Math.sqrt((dX-shiftX)**2+
+            (dY-shiftY)**2); 
+
+            tempCtx.beginPath();
+            tempCtx.arc(shiftX, shiftY, radius, 0, Math.PI*2);
+            tempCtx.stroke();
+            tempCtx.fill();
+
+        }
+
+        function onMouseUpCircle(){
+            isMouseDown = false;
+            ctx.drawImage(tempCanvas, -2.4, -2.4);
+            if(document.getElementById('temp') != null)
+                document.getElementById('temp').remove();
+        }
+    }
+
+    function createLineEvents(e){
+        if(!(isLine || isPen)) return;
+
+        let shiftX = e.offsetX;
+        let shiftY = e.offsetY;
+        let origLoc = {X: e.offsetX, Y: e.offsetY};
+
+        let borderColor = document.getElementById('border').value;
+
+        isMouseDown = true;
+        canvas.addEventListener('mousemove', onMouseMoveLine);
+        canvas.addEventListener('mouseup',onMouseUpLine);
+
+        let tempCanvas = bitmapCanvas.cloneNode();
+        canvas.appendChild(tempCanvas);
+        tempCanvas.id = 'temp';
+        tempCtx = tempCanvas.getContext('2d');
+        tempCtx.strokeStyle = borderColor;
+
+
+        function onMouseMoveLine(e){
+            if(!isMouseDown) return;
+            moveAtLine(e.offsetX, e.offsetY);
+        }
+        function moveAtLine(dX, dY){
+            tempCtx.clearRect(0,0,window.outerWidth-100,window.outerHeight-100);
+            
+            if(isPen){
+                //без этой строки превращается в обычную кисть
+                tempCtx.lineTo(dX,dY);
+            }
+            
+            if(isLine){
+                //beginPath обязателен для того, чтобы не происходило копирование объектов
+                tempCtx.beginPath();
+                tempCtx.moveTo(origLoc.X,origLoc.Y);
+                tempCtx.lineTo(dX,dY);
+            }                     
+
+            tempCtx.stroke();
+        }
+
+        function onMouseUpLine(){            
             isMouseDown = false;
             ctx.drawImage(tempCanvas, -2.4, -2.4);
             if(document.getElementById('temp') != null)
