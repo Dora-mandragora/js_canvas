@@ -12,7 +12,7 @@ window.onload = () =>{
 
     let bitmapCanvas = document.getElementById('svg');
     let ctx = bitmapCanvas.getContext('2d');
-
+    
     const rectButton = document.getElementById('rect');
     const circleButton = document.getElementById('circle'); 
     const lineButton = document.getElementById('line');
@@ -47,6 +47,15 @@ window.onload = () =>{
         isCircle = false;
         isLine = false;
         isPen = true;
+    });
+    clearButton.addEventListener('click', () =>{
+
+        //bitmapCanvas.width = bitmapCanvas.width;
+        // canvas.removeChild(bitmapCanvas);
+        // createCanvas(canvas);
+
+        // bitmapCanvas = document.querySelector('#svg');
+        // ctx = bitmapCanvas.getContext('2d');
     });
     //----------BUTTONS-------------------------------------
 
@@ -127,8 +136,7 @@ window.onload = () =>{
         tempCtx.fillStyle = fillColor;
         tempCtx.strokeStyle = borderColor;
         tempCtx.lineWidth = 4;
-        //рисовать круг
-        //.beginPath();
+        //рисовать круг       
         tempCtx.arc(shiftX,shiftY, 1, 0, Math.PI*2);
         tempCtx.stroke();
 
@@ -143,12 +151,13 @@ window.onload = () =>{
             (dY-shiftY)**2); 
 
             tempCtx.beginPath();
+            //tempCtx.moveTo(shiftX,shiftY);
             tempCtx.arc(shiftX, shiftY, radius, 0, Math.PI*2);
             tempCtx.stroke();
             tempCtx.fill();
-
+            
         }
-
+        
         function onMouseUpCircle(){
             isMouseDown = false;
             ctx.drawImage(tempCanvas, -2.4, -2.4);
@@ -185,8 +194,9 @@ window.onload = () =>{
             tempCtx.clearRect(0,0,window.outerWidth-100,window.outerHeight-100);
             
             if(isPen){
-                //без этой строки превращается в обычную кисть
+                //без этой строки превращается в обычную кисть(почти)
                 tempCtx.lineTo(dX,dY);
+                //tempCtx.moveTo(dX,dY);               
             }
             
             if(isLine){
@@ -199,7 +209,7 @@ window.onload = () =>{
             tempCtx.stroke();
         }
 
-        function onMouseUpLine(){            
+        function onMouseUpLine(){    
             isMouseDown = false;
             ctx.drawImage(tempCanvas, -2.4, -2.4);
             if(document.getElementById('temp') != null)
