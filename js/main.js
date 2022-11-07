@@ -4,6 +4,7 @@ let isCircle = false;
 let isLine = false;
 let isPen = false;
 
+let isClear = false;
 
 window.onload = () =>{
 
@@ -11,7 +12,6 @@ window.onload = () =>{
     createCanvas(canvas);
 
     let bitmapCanvas = document.getElementById('svg');
-    let ctx = bitmapCanvas.getContext('2d');
     
     const rectButton = document.getElementById('rect');
     const circleButton = document.getElementById('circle'); 
@@ -50,12 +50,17 @@ window.onload = () =>{
     });
     clearButton.addEventListener('click', () =>{
 
+        // isClear = true;
+        // isRect = false;
+        // isCircle = false;
+        // isLine = false;
+        // isPen = false;
         //bitmapCanvas.width = bitmapCanvas.width;
-        // canvas.removeChild(bitmapCanvas);
-        // createCanvas(canvas);
+        canvas.removeChild(bitmapCanvas);
+        createCanvas(canvas);
 
-        // bitmapCanvas = document.querySelector('#svg');
-        // ctx = bitmapCanvas.getContext('2d');
+        bitmapCanvas = document.querySelector('#svg');
+        //ctx = bitmapCanvas.getContext('2d');
     });
     //----------BUTTONS-------------------------------------
 
@@ -63,6 +68,8 @@ window.onload = () =>{
     function createRectEvents(e)
     {
         if(!isRect) return;
+        let ctx = bitmapCanvas.getContext('2d');
+
 
         let shiftX = e.offsetX;
         let shiftY = e.offsetY;
@@ -120,6 +127,8 @@ window.onload = () =>{
     function createCircleEvents(e){
         if(!isCircle) return;
 
+        let ctx = bitmapCanvas.getContext('2d');
+
         let shiftX = e.offsetX;
         let shiftY = e.offsetY;
         let borderColor = document.getElementById('border').value;
@@ -169,6 +178,8 @@ window.onload = () =>{
     function createLineEvents(e){
         if(!(isLine || isPen)) return;
 
+        let ctx = bitmapCanvas.getContext('2d');
+
         let shiftX = e.offsetX;
         let shiftY = e.offsetY;
         let origLoc = {X: e.offsetX, Y: e.offsetY};
@@ -216,4 +227,5 @@ window.onload = () =>{
                 document.getElementById('temp').remove();
         }
     }
+
 }
