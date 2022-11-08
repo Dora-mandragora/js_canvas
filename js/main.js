@@ -19,6 +19,7 @@ window.onload = () =>{
     const penButton = document.getElementById('pen');
     const clearButton = document.getElementById('clear');
 
+    //canvas.addEventListener('mousedown', chooseFigure);
     canvas.addEventListener('mousedown', createRectEvents);
     canvas.addEventListener('mousedown', createCircleEvents);
     canvas.addEventListener('mousedown', createLineEvents);
@@ -50,12 +51,6 @@ window.onload = () =>{
     });
     clearButton.addEventListener('click', () =>{
 
-        // isClear = true;
-        // isRect = false;
-        // isCircle = false;
-        // isLine = false;
-        // isPen = false;
-        //bitmapCanvas.width = bitmapCanvas.width;
         canvas.removeChild(bitmapCanvas);
         createCanvas(canvas);
 
@@ -64,6 +59,16 @@ window.onload = () =>{
     });
     //----------BUTTONS-------------------------------------
 
+    function chooseFigure(){
+        if(isRect) canvas.addEventListener('mousedown', createRectEvents);
+        else canvas.removeEventListener('mousedown', createRectEvents);
+        if(isCircle) canvas.addEventListener('mousedown', createCircleEvents);
+        else canvas.removeEventListener('mousedown', createCircleEvents);
+        if(isLine || isPen) canvas.addEventListener('mousedown', createLineEvents);
+        else canvas.removeEventListener('mousedown', createLineEvents);
+        
+
+    }
 
     function createRectEvents(e)
     {
@@ -118,6 +123,8 @@ window.onload = () =>{
 
         function onMouseUpRect(){
             isMouseDown = false;
+            canvas.removeEventListener('mousemove', onMouseMoveRect);
+            canvas.removeEventListener('mouseup',onMouseUpRect);
             ctx.drawImage(tempCanvas, -2.4, -2.4);
             if(document.getElementById('temp') != null)
                 document.getElementById('temp').remove();
@@ -169,6 +176,9 @@ window.onload = () =>{
         
         function onMouseUpCircle(){
             isMouseDown = false;
+            canvas.removeEventListener('mousemove', onMouseMoveCircle);
+            canvas.removeEventListener('mouseup',onMouseUpCircle);
+
             ctx.drawImage(tempCanvas, -2.4, -2.4);
             if(document.getElementById('temp') != null)
                 document.getElementById('temp').remove();
@@ -222,6 +232,8 @@ window.onload = () =>{
 
         function onMouseUpLine(){    
             isMouseDown = false;
+            canvas.removeEventListener('mousemove', onMouseMoveLine);
+            canvas.removeEventListener('mouseup',onMouseUpLine);
             ctx.drawImage(tempCanvas, -2.4, -2.4);
             if(document.getElementById('temp') != null)
                 document.getElementById('temp').remove();
