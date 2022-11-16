@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="css/style.css">
     <script src="js/main.js"></script>
     <script src="js/actions.js"></script>
+    <script src = "js/filling.js"></script>
     
 </head>
 
@@ -17,10 +18,14 @@
         <button id = "circle"><img src="circle.png" alt = "circle"></button>
         <button id = "line"><img src="line.png" alt = "line"></button>
         <button id = "pen"><img src="pen.png" alt = "pen"></button>
+        <button id = "flood"><img src="flood_fill.png" alt = "flood fill"></button>
+        
         <button id = "clear"><img src="cancel.png" alt = "clear"></button>
 
-        <div class = property><label for = color>Border: </label> <input type="color" id = 'border'></div>
-        <div class = property><label for = color>Fill: </label> <input type="color" id = 'fill' value = "#FFFFFF"></div>
+
+        <div class = property><label for = color>Border color: </label> <input type="color" id = 'border'></div>
+        <div class = property><label for = color>Fill color: </label> <input type="color" id = 'fill' value = "#FFFFFF"></div>
+        <div class = property><label for = border-width>Border width: </label>0<input type=range id = 'border-width' value = 1 min = 0 max = 20>20</div>
     </div>
     <div class = "canvas"></div>
     

@@ -5,7 +5,10 @@ let isLine = false;
 let isPen = false;
 
 let isClear = false;
+let isFlood = false;
 
+
+//сделать белую заливку холста, чтобы работала сама заливка
 window.onload = () =>{
 
     const canvas = document.getElementsByClassName('canvas')[0];
@@ -18,36 +21,41 @@ window.onload = () =>{
     const lineButton = document.getElementById('line');
     const penButton = document.getElementById('pen');
     const clearButton = document.getElementById('clear');
+    const floodButton = document.getElementById('flood');
 
     //canvas.addEventListener('mousedown', chooseFigure);
     canvas.addEventListener('mousedown', createRectEvents);
     canvas.addEventListener('mousedown', createCircleEvents);
     canvas.addEventListener('mousedown', createLineEvents);
-
+    canvas.addEventListener('mousedown', createFillEvent);
     //----------BUTTONS-------------------------------------
     rectButton.addEventListener('click', ()=>{
         isRect = true;
         isCircle = false;
         isLine = false;
         isPen = false;
+        isFlood = false;
     });
     circleButton.addEventListener('click', ()=>{
         isRect = false;
         isCircle = true;
         isLine = false;
         isPen = false;
+        isFlood = false;
     });
     lineButton.addEventListener('click', ()=>{
         isRect = false;
         isCircle = false;
         isLine = true;
         isPen = false;
+        isFlood = false;
     });
     penButton.addEventListener('click', ()=>{
         isRect = false;
         isCircle = false;
         isLine = false;
         isPen = true;
+        isFlood = false;
     });
     clearButton.addEventListener('click', () =>{
 
@@ -57,6 +65,13 @@ window.onload = () =>{
         bitmapCanvas = document.querySelector('#svg');
         //ctx = bitmapCanvas.getContext('2d');
     });
+    floodButton.addEventListener('click', () =>{
+        isRect = false;
+        isCircle = false;
+        isLine = false;
+        isPen = false;
+        isFlood = true;
+    })
     //----------BUTTONS-------------------------------------
 
     function chooseFigure(){
@@ -66,7 +81,8 @@ window.onload = () =>{
         else canvas.removeEventListener('mousedown', createCircleEvents);
         if(isLine || isPen) canvas.addEventListener('mousedown', createLineEvents);
         else canvas.removeEventListener('mousedown', createLineEvents);
-        
+        if(isFlood) canvas.addEventListener('mousedown', createFillEvent);
+        else canvas.removeEventListener('mousedown', createFillEvent);
 
     }
 
@@ -81,6 +97,7 @@ window.onload = () =>{
         let origLoc = {X: e.offsetX, Y: e.offsetY};
         let borderColor = document.getElementById('border').value;
         let fillColor = document.getElementById('fill').value;
+        let border = document.getElementById('border-width').value;
 
         isMouseDown = true;
         canvas.addEventListener('mousemove', onMouseMoveRect);
@@ -92,7 +109,7 @@ window.onload = () =>{
         tempCtx = tempCanvas.getContext('2d');
         tempCtx.fillStyle = fillColor;
         tempCtx.strokeStyle = borderColor;
-        tempCtx.lineWidth = 5;
+        tempCtx.lineWidth = border;
         tempCtx.fillRect(shiftX,shiftY,1,1);
 
         
@@ -140,6 +157,7 @@ window.onload = () =>{
         let shiftY = e.offsetY;
         let borderColor = document.getElementById('border').value;
         let fillColor = document.getElementById('fill').value;
+        let border = document.getElementById('border-width').value;
 
         isMouseDown = true;
         canvas.addEventListener('mousemove', onMouseMoveCircle);
@@ -151,7 +169,7 @@ window.onload = () =>{
         tempCtx = tempCanvas.getContext('2d');
         tempCtx.fillStyle = fillColor;
         tempCtx.strokeStyle = borderColor;
-        tempCtx.lineWidth = 4;
+        tempCtx.lineWidth = border;
         //рисовать круг       
         tempCtx.arc(shiftX,shiftY, 1, 0, Math.PI*2);
         tempCtx.stroke();
@@ -195,6 +213,7 @@ window.onload = () =>{
         let origLoc = {X: e.offsetX, Y: e.offsetY};
 
         let borderColor = document.getElementById('border').value;
+        let border = document.getElementById('border-width').value;
 
         isMouseDown = true;
         canvas.addEventListener('mousemove', onMouseMoveLine);
@@ -205,7 +224,7 @@ window.onload = () =>{
         tempCanvas.id = 'temp';
         tempCtx = tempCanvas.getContext('2d');
         tempCtx.strokeStyle = borderColor;
-
+        tempCtx.lineWidth = border;
 
         function onMouseMoveLine(e){
             if(!isMouseDown) return;
@@ -240,4 +259,32 @@ window.onload = () =>{
         }
     }
 
+    function createFillEvent(e){
+        if(!isFlood) return;
+        let arrowX = e.offsetX;
+        let arrowY = e.offsetY;
+
+        let bitmapCanvas = document.getElementById('svg');
+        let ctx = bitmapCanvas.getContext('2d');
+        let screen = ctx.getImageData(0,0, window.outerWidth-100,window.outerHeight-100);
+        
+
+    //взять пиксель и узнать его цвет
+        let origColor = ctx.getImageData(arrowX,arrowY,1,1).data;
+        let fillColor = document.querySelector('#fill').value;
+
+        let red = fillColor[1] + fillColor[2];
+        let green = fillColor[3] + fillColor[4];
+        let blue = fillColor[5] + fillColor[6];
+        fillColor = ctx.getImageData(0,0,1,1).data;
+        fillColor[0] = parseInt(red,16);
+        fillColor[1] = parseInt(green,16);
+        fillColor[2] = parseInt(blue,16);
+        
+        fillClosedLoop(screen, arrowX, arrowY, bitmapCanvas.width, bitmapCanvas.height, origColor, fillColor);
+        
+        //отображение заливки
+        ctx.putImageData(screen, 0,0);
+        
+    }
 }
